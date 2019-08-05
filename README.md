@@ -17,6 +17,7 @@ dependencies {
 ```
 
 Latest version: [![](https://jitpack.io/v/luksoral/ExpandedMenuView.svg)](https://jitpack.io/#luksoral/ExpandedMenuView)
+Android arsenal: [![Android Arsenal]( https://img.shields.io/badge/Android%20Arsenal-Expanded%20Menu%20View-green.svg?style=flat )]( https://android-arsenal.com/details/1/7809 )
 
 Add `ExpandedMenuView` as a view to the layout:
 
@@ -50,5 +51,10 @@ Add code below for icons and titles initialization (can take 3 or 4 items)
 ```
 
 `ExpandableMenuItem` - data object menu item
+
+Add item click listener
+``` xml
+expMenu.setOnItemClickListener(this)
+```
 
 `ExpandedMenuClickListener` - interface for listen items click
