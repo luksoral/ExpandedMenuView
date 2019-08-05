@@ -17,6 +17,7 @@ dependencies {
 ```
 
 Latest version: [![](https://jitpack.io/v/luksoral/ExpandedMenuView.svg)](https://jitpack.io/#luksoral/ExpandedMenuView)
+
 Android arsenal: [![Android Arsenal]( https://img.shields.io/badge/Android%20Arsenal-Expanded%20Menu%20View-green.svg?style=flat )]( https://android-arsenal.com/details/1/7809 )
 
 Add `ExpandedMenuView` as a view to the layout:
