@@ -24,24 +24,27 @@ Add `ExpandedMenuView` as a view to the layout:
 
 ``` xml
 <pro.midev.expandedmenulibrary.ExpandedMenuView
-     android:id="@+id/expMenu"
-     android:layout_width="match_parent"
-     android:layout_height="match_parent"
-     app:em_background_color="@color/colorPrimary"
-     app:em_shadow_color="@color/colorPrimaryDark"
-     app:em_menu_icon="@drawable/ic_menu"
-     app:em_close_menu_icon="@drawable/ic_close_menu"
-     app:em_text_color="@android:color/white"/>
+        android:id="@+id/expMenu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:em_background_color="@color/colorPrimary"
+        app:em_shadow_color="@color/colorPrimaryDark"
+        app:em_menu_icon="@drawable/ic_menu"
+        app:em_close_menu_icon="@drawable/ic_close_menu"
+        app:em_text_color="@android:color/white"
+        app:em_outside_margin="24dp"
+        app:em_font_family="@font/rubik_medium"
+        app:em_is_on_click_closable="true"/>
 ```
 
 `em_background_color` - menu background color\
 `em_menu_icon` - menu icon drawable\
 `em_close_menu_icon` - close menu icon drawable\
 `em_shadow_color` - menu shadow color\
-`em_text_color` - menu title color
-`em_outside_margin` - menu outside margin
-`em_font_family` - menu title font-family
-`em_is_on_click_closable` - close menu by item click when true
+`em_text_color` - menu title color\
+`em_outside_margin` - menu outside margin\
+`em_font_family` - menu title font-family\
+`em_is_on_click_closable` - close menu by item click when true\
 
 Add code below for icons and titles initialization (can take 3 or 4 items)
 
