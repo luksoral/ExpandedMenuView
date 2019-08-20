@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<declare-styleable name="ExpandedMenuView">
+		<attr name="em_outside_margin" format="dimension"/>
 		<attr name="em_background_color" format="color"/>
 		<attr name="em_shadow_color" format="color"/>
 		<attr name="em_text_color" format="color"/>
+		<attr name="em_font_family" format="string"/>
 		<attr name="em_menu_icon" format="integer"/>
 		<attr name="em_close_menu_icon" format="integer"/>
+		<attr name="em_is_on_click_closable" format="boolean"/>
 	</declare-styleable>
 </resources>

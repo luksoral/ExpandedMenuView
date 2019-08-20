@@ -22,7 +22,6 @@ import kotlin.math.min
 
 class ExpandedMenuView : View {
 
-    private val MENU_OUTSIDE_MARGIN = 24.dpToPx()
     private val MENU_CLOSE_WIDTH_AND_HEIGHT = 56.dpToPx()
 
     private val CLOSE_STATE = 0
@@ -44,12 +43,15 @@ class ExpandedMenuView : View {
     private var menuItemScaleOffset: Float = 0f
     private var menuTextAlpha: Int = 0
 
+    var menuOutsideMargin : Float = 24f
     var menuBackground: Int = android.R.color.white
     var shadowColor: Int = android.R.color.black
     var textColor: Int = android.R.color.black
+    var textFontFamily : String = "sans-serif-medium"
     var menuIcon: Drawable = resources.getDrawable(android.R.drawable.ic_menu_help, null)
     var menuCloseIcon: Drawable = resources.getDrawable(android.R.drawable.ic_menu_revert, null)
     private var menuItems: MutableList<ExpandedMenuItem> = mutableListOf()
+    var isOnClickClosable : Boolean = false
 
     private var onItemClickListener : ExpandedMenuClickListener? = null
 
@@ -64,13 +66,16 @@ class ExpandedMenuView : View {
     }
 
     private fun initByAttributes(attributes: TypedArray) {
+        menuOutsideMargin = attributes.getDimensionPixelOffset(R.styleable.ExpandedMenuView_em_outside_margin, menuOutsideMargin.toInt()).toFloat()
         menuBackground = attributes.getColor(R.styleable.ExpandedMenuView_em_background_color, menuBackground)
         shadowColor = attributes.getColor(R.styleable.ExpandedMenuView_em_shadow_color, shadowColor)
         textColor = attributes.getColor(R.styleable.ExpandedMenuView_em_text_color, textColor)
+        textFontFamily = attributes.getString(R.styleable.ExpandedMenuView_em_font_family) ?: textFontFamily
         val iconMenu = attributes.getDrawable(R.styleable.ExpandedMenuView_em_menu_icon)
         if (iconMenu != null) menuIcon = iconMenu
         val iconCloseMenu = attributes.getDrawable(R.styleable.ExpandedMenuView_em_close_menu_icon)
         if (iconCloseMenu != null) menuCloseIcon = iconCloseMenu
+        isOnClickClosable = attributes.getBoolean(R.styleable.ExpandedMenuView_em_is_on_click_closable, isOnClickClosable)
     }
 
     override fun invalidate() {
@@ -91,7 +96,7 @@ class ExpandedMenuView : View {
             textSize = 10f.spToPx()
             isAntiAlias = true
             style = Paint.Style.FILL
-            typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+            typeface = Typeface.create(textFontFamily, Typeface.NORMAL)
             alpha = menuTextAlpha
         }
     }
@@ -122,51 +127,51 @@ class ExpandedMenuView : View {
         initPainters()
 
         if (currentState == OPEN_STATE) {
-            menuWidthOffset = (measuredWidth - MENU_CLOSE_WIDTH_AND_HEIGHT - MENU_OUTSIDE_MARGIN * 2).toInt()
+            menuWidthOffset = (measuredWidth - MENU_CLOSE_WIDTH_AND_HEIGHT - menuOutsideMargin * 2).toInt()
         }
         menuRect.set(
-            measuredWidth - MENU_OUTSIDE_MARGIN - MENU_CLOSE_WIDTH_AND_HEIGHT - menuWidthOffset,
-            measuredHeight - MENU_OUTSIDE_MARGIN - MENU_CLOSE_WIDTH_AND_HEIGHT,
-            measuredWidth - MENU_OUTSIDE_MARGIN,
-            measuredHeight - MENU_OUTSIDE_MARGIN
+            measuredWidth - menuOutsideMargin - MENU_CLOSE_WIDTH_AND_HEIGHT - menuWidthOffset,
+            measuredHeight - menuOutsideMargin - MENU_CLOSE_WIDTH_AND_HEIGHT,
+            measuredWidth - menuOutsideMargin,
+            measuredHeight - menuOutsideMargin
         )
         canvas.drawRoundRect(menuRect, 18.dpToPx(), 18.dpToPx(), menuPaint)
 
         menuIcon.setBounds(
-            (measuredWidth - MENU_OUTSIDE_MARGIN - 40.dpToPx()).toInt(),
-            (measuredHeight - MENU_OUTSIDE_MARGIN - 40.dpToPx()).toInt(),
-            (measuredWidth - MENU_OUTSIDE_MARGIN - 16.dpToPx()).toInt(),
-            (measuredHeight - MENU_OUTSIDE_MARGIN - 16.dpToPx()).toInt()
+            (measuredWidth - menuOutsideMargin - 40.dpToPx()).toInt(),
+            (measuredHeight - menuOutsideMargin - 40.dpToPx()).toInt(),
+            (measuredWidth - menuOutsideMargin - 16.dpToPx()).toInt(),
+            (measuredHeight - menuOutsideMargin - 16.dpToPx()).toInt()
         )
         menuIcon.alpha = menuIconAlpha
         menuIcon.draw(canvas)
 
         menuCloseIcon.setBounds(
-            (measuredWidth - MENU_OUTSIDE_MARGIN - 48.dpToPx()).toInt(),
-            (measuredHeight - MENU_OUTSIDE_MARGIN - 40.dpToPx()).toInt(),
-            (measuredWidth - MENU_OUTSIDE_MARGIN - 24.dpToPx()).toInt(),
-            (measuredHeight - MENU_OUTSIDE_MARGIN - 16.dpToPx()).toInt()
+            (measuredWidth - menuOutsideMargin - 48.dpToPx()).toInt(),
+            (measuredHeight - menuOutsideMargin - 40.dpToPx()).toInt(),
+            (measuredWidth - menuOutsideMargin - 24.dpToPx()).toInt(),
+            (measuredHeight - menuOutsideMargin - 16.dpToPx()).toInt()
         )
         menuCloseIcon.alpha = menuCloseIconAlpha
         menuCloseIcon.draw(canvas)
 
-        val itemWidth: Float = (measuredWidth - MENU_OUTSIDE_MARGIN * 2 - 8.dpToPx() * (menuItems.size + 2)) / (menuItems.size + 1)
+        val itemWidth: Float = (measuredWidth - menuOutsideMargin * 2 - 8.dpToPx() * (menuItems.size + 2)) / (menuItems.size + 1)
 
         for (i in 0 until menuItems.size) {
             val item = resources.getDrawable(menuItems[i].icon, null)
             item.setBounds(
-                (MENU_OUTSIDE_MARGIN + 8.dpToPx() * (i + 1) + itemWidth / 2 - menuItemScaleOffset + itemWidth * i).toInt(),
-                (measuredHeight - MENU_OUTSIDE_MARGIN - MENU_CLOSE_WIDTH_AND_HEIGHT + 8.dpToPx() + 12.dpToPx() - menuItemScaleOffset).toInt(),
-                (MENU_OUTSIDE_MARGIN + 8.dpToPx() * (i + 1) + itemWidth / 2 + menuItemScaleOffset + itemWidth * i).toInt(),
-                (measuredHeight - MENU_OUTSIDE_MARGIN - 24.dpToPx() - 12.dpToPx() + menuItemScaleOffset).toInt()
+                (menuOutsideMargin + 8.dpToPx() * (i + 1) + itemWidth / 2 - menuItemScaleOffset + itemWidth * i).toInt(),
+                (measuredHeight - menuOutsideMargin - MENU_CLOSE_WIDTH_AND_HEIGHT + 8.dpToPx() + 12.dpToPx() - menuItemScaleOffset).toInt(),
+                (menuOutsideMargin + 8.dpToPx() * (i + 1) + itemWidth / 2 + menuItemScaleOffset + itemWidth * i).toInt(),
+                (measuredHeight - menuOutsideMargin - 24.dpToPx() - 12.dpToPx() + menuItemScaleOffset).toInt()
             )
             item.alpha = menuItemAlpha
             item.draw(canvas)
 
             canvas.drawText(
                 menuItems[i].name,
-                MENU_OUTSIDE_MARGIN + 8.dpToPx() * (i + 1) + itemWidth / 2 + itemWidth * i - textPaint.measureText(menuItems[i].name) / 2,
-                measuredHeight - MENU_OUTSIDE_MARGIN - 6.dpToPx() - 5f.spToPx(),
+                menuOutsideMargin + 8.dpToPx() * (i + 1) + itemWidth / 2 + itemWidth * i - textPaint.measureText(menuItems[i].name) / 2,
+                measuredHeight - menuOutsideMargin - 6.dpToPx() - 5f.spToPx(),
                 textPaint
             )
         }
@@ -197,29 +202,29 @@ class ExpandedMenuView : View {
             when (currentState) {
                 CLOSE_STATE -> {
                     closeAndOpenMenuPlace.set(
-                        measuredWidth - MENU_OUTSIDE_MARGIN - MENU_CLOSE_WIDTH_AND_HEIGHT,
-                        measuredHeight - MENU_OUTSIDE_MARGIN - MENU_CLOSE_WIDTH_AND_HEIGHT,
-                        measuredWidth - MENU_OUTSIDE_MARGIN,
-                        measuredHeight - MENU_OUTSIDE_MARGIN
+                        measuredWidth - menuOutsideMargin - MENU_CLOSE_WIDTH_AND_HEIGHT,
+                        measuredHeight - menuOutsideMargin - MENU_CLOSE_WIDTH_AND_HEIGHT,
+                        measuredWidth - menuOutsideMargin,
+                        measuredHeight - menuOutsideMargin
                     )
                 }
                 OPEN_STATE -> {
                     closeAndOpenMenuPlace.set(
-                        measuredWidth - MENU_OUTSIDE_MARGIN - MENU_CLOSE_WIDTH_AND_HEIGHT - 16.dpToPx(),
-                        measuredHeight - MENU_OUTSIDE_MARGIN - MENU_CLOSE_WIDTH_AND_HEIGHT,
-                        measuredWidth - MENU_OUTSIDE_MARGIN,
-                        measuredHeight - MENU_OUTSIDE_MARGIN
+                        measuredWidth - menuOutsideMargin - MENU_CLOSE_WIDTH_AND_HEIGHT - 16.dpToPx(),
+                        measuredHeight - menuOutsideMargin - MENU_CLOSE_WIDTH_AND_HEIGHT,
+                        measuredWidth - menuOutsideMargin,
+                        measuredHeight - menuOutsideMargin
                     )
 
-                    val itemWidth: Float = (measuredWidth - MENU_OUTSIDE_MARGIN * 2 - 8.dpToPx() * (menuItems.size + 2)) / (menuItems.size + 1)
+                    val itemWidth: Float = (measuredWidth - menuOutsideMargin * 2 - 8.dpToPx() * (menuItems.size + 2)) / (menuItems.size + 1)
 
                     for (i in 0 until menuItems.size) {
                         itemsSetList.add(RectF().apply {
                             set(
-                                MENU_OUTSIDE_MARGIN + 8.dpToPx() * (i + 1) + itemWidth * i,
-                                measuredHeight - MENU_OUTSIDE_MARGIN - MENU_CLOSE_WIDTH_AND_HEIGHT,
-                                MENU_OUTSIDE_MARGIN + 8.dpToPx() * (i + 1) + itemWidth * (i + 1),
-                                measuredHeight - MENU_OUTSIDE_MARGIN
+                                menuOutsideMargin + 8.dpToPx() * (i + 1) + itemWidth * i,
+                                measuredHeight - menuOutsideMargin - MENU_CLOSE_WIDTH_AND_HEIGHT,
+                                menuOutsideMargin + 8.dpToPx() * (i + 1) + itemWidth * (i + 1),
+                                measuredHeight - menuOutsideMargin
                             )
                         })
                     }
@@ -236,6 +241,7 @@ class ExpandedMenuView : View {
                     for (i in 0 until itemsSetList.size) {
                         if (itemsSetList[i].contains(x, y)) {
                             onItemClickListener?.onItemClick(i)
+                            if (isOnClickClosable) ExpandedMenuAnimation().getCurrentAnimatorSet().start()
                             return true
                         }
                     }
@@ -372,15 +378,15 @@ class ExpandedMenuView : View {
             when (currentState) {
                 OPEN_STATE -> {
                     menuScaleAnimation = ValueAnimator.ofInt(
-                        (measuredWidth - MENU_CLOSE_WIDTH_AND_HEIGHT - MENU_OUTSIDE_MARGIN * 2).toInt(),
+                        (measuredWidth - MENU_CLOSE_WIDTH_AND_HEIGHT - menuOutsideMargin * 2).toInt(),
                         0
                     )
                     menuScaleAnimation.duration = 200
                 }
                 CLOSE_STATE -> {
                     menuScaleAnimation = ValueAnimator.ofInt(
-                        MENU_OUTSIDE_MARGIN.toInt(),
-                        (measuredWidth - MENU_CLOSE_WIDTH_AND_HEIGHT - MENU_OUTSIDE_MARGIN * 2).toInt()
+                        menuOutsideMargin.toInt(),
+                        (measuredWidth - MENU_CLOSE_WIDTH_AND_HEIGHT - menuOutsideMargin * 2).toInt()
                     )
                     menuScaleAnimation.duration = 300
                 }
