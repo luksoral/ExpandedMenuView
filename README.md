@@ -39,6 +39,9 @@ Add `ExpandedMenuView` as a view to the layout:
 `em_close_menu_icon` - close menu icon drawable\
 `em_shadow_color` - menu shadow color\
 `em_text_color` - menu title color
+`em_outside_margin` - menu outside margin
+`em_font_family` - menu title font-family
+`em_is_on_click_closable` - close menu by item click when true
 
 Add code below for icons and titles initialization (can take 3 or 4 items)
 
