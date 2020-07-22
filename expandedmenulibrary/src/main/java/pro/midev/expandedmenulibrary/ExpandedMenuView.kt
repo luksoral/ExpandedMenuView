@@ -70,8 +70,10 @@ class ExpandedMenuView : View {
         textFontFamily = attributes.getString(R.styleable.ExpandedMenuView_em_font_family) ?: textFontFamily
         val iconMenu = attributes.getDrawable(R.styleable.ExpandedMenuView_em_menu_icon)
         if (iconMenu != null) menuIcon = iconMenu
+        menuIcon.mutate()
         val iconCloseMenu = attributes.getDrawable(R.styleable.ExpandedMenuView_em_close_menu_icon)
         if (iconCloseMenu != null) menuCloseIcon = iconCloseMenu
+        menuCloseIcon.mutate()
         isOnClickClosable = attributes.getBoolean(R.styleable.ExpandedMenuView_em_is_on_click_closable, isOnClickClosable)
     }
 
