@@ -157,7 +157,9 @@ class ExpandedMenuView : View {
 
         for (i in 0 until menuItems.size) {
             val item = resources.getDrawable(menuItems[i].icon, null)
+
             menuItems[i].iconTint?.let {
+                item.mutate()
                 item.setTint(it)
             }
             item.setBounds(
