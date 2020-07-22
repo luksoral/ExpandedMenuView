@@ -6,10 +6,7 @@ import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.content.res.TypedArray
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.RectF
-import android.graphics.Typeface
+import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Parcelable
@@ -91,12 +88,13 @@ class ExpandedMenuView : View {
             setShadowLayer(8.dpToPx(), 0f, 4.dpToPx(), shadowColor)
         }
 
+
         textPaint.apply {
             color = textColor
             textSize = 10f.spToPx()
             isAntiAlias = true
             style = Paint.Style.FILL
-            typeface = Typeface.create(textFontFamily, Typeface.NORMAL)
+            typeface = Typeface.createFromAsset(context.assets, textFontFamily)
             alpha = menuTextAlpha
         }
     }
@@ -159,6 +157,9 @@ class ExpandedMenuView : View {
 
         for (i in 0 until menuItems.size) {
             val item = resources.getDrawable(menuItems[i].icon, null)
+            menuItems[i].iconTint?.let {
+                item.setTint(it)
+            }
             item.setBounds(
                 (menuOutsideMargin + 8.dpToPx() * (i + 1) + itemWidth / 2 - menuItemScaleOffset + itemWidth * i).toInt(),
                 (measuredHeight - menuOutsideMargin - MENU_CLOSE_WIDTH_AND_HEIGHT + 8.dpToPx() + 12.dpToPx() - menuItemScaleOffset).toInt(),

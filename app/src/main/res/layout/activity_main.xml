@@ -27,7 +27,7 @@
             app:em_close_menu_icon="@drawable/ic_close_menu"
             app:em_text_color="@android:color/white"
             app:em_outside_margin="24dp"
-            app:em_font_family="@font/rubik_medium"
+            app:em_font_family="rubik_medium.ttf"
             app:em_is_on_click_closable="false"/>
 
 </RelativeLayout>
