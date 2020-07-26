@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<declare-styleable name="ExpandedMenuView">
+		<attr name="em_corner_radius" format="dimension"/>
 		<attr name="em_outside_margin" format="dimension"/>
 		<attr name="em_background_color" format="color"/>
 		<attr name="em_shadow_color" format="color"/>
