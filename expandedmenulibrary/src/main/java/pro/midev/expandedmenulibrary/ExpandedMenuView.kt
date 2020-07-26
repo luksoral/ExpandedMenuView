@@ -6,10 +6,7 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.TypedArray
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.RectF
-import android.graphics.Typeface
+import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Parcelable
@@ -22,11 +19,6 @@ import kotlin.math.min
 
 class ExpandedMenuView : View {
 
-    private val MENU_CLOSE_WIDTH_AND_HEIGHT = 56.dpToPx()
-
-    private val CLOSE_STATE = 0
-    private val OPEN_STATE = 1
-    private val DRAGGLING = 2
     var currentState = CLOSE_STATE
     private var lastState = CLOSE_STATE
 
@@ -43,16 +35,17 @@ class ExpandedMenuView : View {
     private var menuItemScaleOffset: Float = 0f
     private var menuTextAlpha: Int = 0
 
-    var menuOutsideMargin: Float = 24f
-    var menuCornerRadius: Float = 18.dpToPx()
-    var menuBackground: Int = android.R.color.white
-    var shadowColor: Int = android.R.color.black
-    var textColor: Int = android.R.color.black
-    var textFontFamily: String = "sans-serif-medium"
-    var menuIcon: Drawable = resources.getDrawable(android.R.drawable.ic_menu_help, null)
-    var menuCloseIcon: Drawable = resources.getDrawable(android.R.drawable.ic_menu_revert, null)
+    private var menuOutsideMargin: Float = 24f
+    private var menuCornerRadius: Float = 18.dpToPx()
+    private var menuBackground: Int = Color.WHITE
+    private var shadowColor: Int = Color.BLACK
+    private var textColor: Int = Color.BLACK
+    private var textFontFamily: String = "sans-serif-medium"
+    private var menuIcon: Drawable = resources.getDrawable(android.R.drawable.ic_menu_help, null)
+    private var menuCloseIcon: Drawable =
+        resources.getDrawable(android.R.drawable.ic_menu_revert, null)
     private var menuItems: MutableList<ExpandedMenuItem> = mutableListOf()
-    var isOnClickClosable: Boolean = false
+    private var isOnClickClosable: Boolean = false
 
     private var onItemClickListener: ExpandedMenuClickListener? = null
 
@@ -318,21 +311,29 @@ class ExpandedMenuView : View {
             menuItemAlpha = state.getInt(INSTANCE_MENU_ITEM_ALPHA)
             menuItemScaleOffset = state.getFloat(INSTANCE_MENU_ITEM_SCALE_OFFSET)
             menuTextAlpha = state.getInt(INSTANCE_MENU_TEXT_ALPHA)
-            super.onRestoreInstanceState(state.getParcelable<Parcelable>(INSTANCE_STATE))
+            super.onRestoreInstanceState(state.getParcelable(INSTANCE_STATE))
             return
         }
         super.onRestoreInstanceState(state)
     }
 
     companion object {
-        private val INSTANCE_STATE = "saved_instance"
-        private val INSTANCE_MENU_STATE = "menu_state"
-        private val INSTANCE_MENU_ICON_ALPHA = "menu_icon_alpha"
-        private val INSTANCE_MENU_CLOSE_ICON_ALPHA = "menu_close_icon_alpha"
-        private val INSTANCE_MENU_CAN_TOUCH_THIS = "menu_can_touch_this"
-        private val INSTANCE_MENU_ITEM_ALPHA = "menu_item_alpha"
-        private val INSTANCE_MENU_ITEM_SCALE_OFFSET = "menu_item_scale_offset"
-        private val INSTANCE_MENU_TEXT_ALPHA = "menu_text_alpha"
+
+        private val MENU_CLOSE_WIDTH_AND_HEIGHT = 56.dpToPx()
+
+        private const val CLOSE_STATE = 0
+        private const val OPEN_STATE = 1
+        private const val DRAGGLING = 2
+
+
+        private const val INSTANCE_STATE = "saved_instance"
+        private const val INSTANCE_MENU_STATE = "menu_state"
+        private const val INSTANCE_MENU_ICON_ALPHA = "menu_icon_alpha"
+        private const val INSTANCE_MENU_CLOSE_ICON_ALPHA = "menu_close_icon_alpha"
+        private const val INSTANCE_MENU_CAN_TOUCH_THIS = "menu_can_touch_this"
+        private const val INSTANCE_MENU_ITEM_ALPHA = "menu_item_alpha"
+        private const val INSTANCE_MENU_ITEM_SCALE_OFFSET = "menu_item_scale_offset"
+        private const val INSTANCE_MENU_TEXT_ALPHA = "menu_text_alpha"
     }
 
     inner class ExpandedMenuAnimation {
