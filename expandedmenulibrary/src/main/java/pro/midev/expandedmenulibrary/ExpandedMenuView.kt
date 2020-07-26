@@ -186,9 +186,9 @@ class ExpandedMenuView : View {
             }
             item.setBounds(
                 (menuOutsideMargin + 8.dpToPx() * (i + 1) + itemWidth / 2 - menuItemScaleOffset + itemWidth * i).toInt(),
-                (measuredHeight - menuOutsideMargin - MENU_CLOSE_WIDTH_AND_HEIGHT + 12.dpToPx() + 12.dpToPx() - menuItemScaleOffset).toInt(),
+                (measuredHeight - menuOutsideMargin - MENU_CLOSE_WIDTH_AND_HEIGHT + 10.dpToPx() + 12.dpToPx() - menuItemScaleOffset).toInt(),
                 (menuOutsideMargin + 8.dpToPx() * (i + 1) + itemWidth / 2 + menuItemScaleOffset + itemWidth * i).toInt(),
-                (measuredHeight - menuOutsideMargin - 24.dpToPx() - 12.dpToPx() + menuItemScaleOffset).toInt()
+                (measuredHeight - menuOutsideMargin - 24.dpToPx() - 10.dpToPx() + menuItemScaleOffset).toInt()
             )
             item.alpha = menuItemAlpha
             item.draw(canvas)
@@ -198,7 +198,7 @@ class ExpandedMenuView : View {
                 menuOutsideMargin + 8.dpToPx() * (i + 1) + itemWidth / 2 + itemWidth * i - textPaint.measureText(
                     menuItems[i].name
                 ) / 2,
-                measuredHeight - menuOutsideMargin - 6.dpToPx() - 5f.spToPx(),
+                measuredHeight - menuOutsideMargin - 3.dpToPx() - 5f.spToPx(),
                 textPaint
             )
         }
