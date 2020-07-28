@@ -34,7 +34,8 @@ Add `ExpandedMenuView` as a view to the layout:
         app:em_text_color="@android:color/white"
         app:em_outside_margin="24dp"
         app:em_font_family="@font/rubik_medium"
-        app:em_is_on_click_closable="true"/>
+        app:em_is_on_click_closable="true"
+        app:em_corner_radius="8dp"/>
 ```
 
 `em_background_color` - menu background color\
@@ -50,10 +51,10 @@ Add code below for icons and titles initialization (can take 3 or 4 items)
 
 ``` xml
 <expandableMenuViewId>.setIcons(
-            ExpandedMenuItem(R.drawable.ic_home, "Home"),
-            ExpandedMenuItem(R.drawable.ic_qr, "QR-code"),
-            ExpandedMenuItem(R.drawable.ic_main_menu, "Menu"),
-            ExpandedMenuItem(R.drawable.ic_profile, "Profile")
+            ExpandedMenuItem(R.drawable.ic_home, "Home", ContextCompat.getColor(this, R.color.colorAccent)),
+            ExpandedMenuItem(R.drawable.ic_qr, "QR-code", ContextCompat.getColor(this, R.color.colorAccent)),
+            ExpandedMenuItem(R.drawable.ic_main_menu, "Menu", ContextCompat.getColor(this, R.color.colorAccent)),
+            ExpandedMenuItem(R.drawable.ic_profile, "Profile", ContextCompat.getColor(this, R.color.colorAccent))
         )
 ```
 
