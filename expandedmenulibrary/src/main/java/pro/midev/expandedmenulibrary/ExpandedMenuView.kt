@@ -2,8 +2,8 @@ package pro.midev.expandedmenulibrary
 
 import android.animation.Animator
 import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.*
@@ -11,19 +11,14 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.view.animation.*
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import kotlin.math.min
 
 class ExpandedMenuView : View {
 
-    private val MENU_CLOSE_WIDTH_AND_HEIGHT = 56.dpToPx()
-
-    private val CLOSE_STATE = 0
-    private val OPEN_STATE = 1
-    private val DRAGGLING = 2
     var currentState = CLOSE_STATE
     private var lastState = CLOSE_STATE
 
@@ -40,39 +35,64 @@ class ExpandedMenuView : View {
     private var menuItemScaleOffset: Float = 0f
     private var menuTextAlpha: Int = 0
 
-    var menuOutsideMargin : Float = 24f
-    var menuBackground: Int = android.R.color.white
-    var shadowColor: Int = android.R.color.black
-    var textColor: Int = android.R.color.black
-    var textFontFamily : String = "sans-serif-medium"
-    var menuIcon: Drawable = resources.getDrawable(android.R.drawable.ic_menu_help, null)
-    var menuCloseIcon: Drawable = resources.getDrawable(android.R.drawable.ic_menu_revert, null)
+    private var menuOutsideMargin: Float = 24f
+    private var menuCornerRadius: Float = 18.dpToPx()
+    private var menuBackground: Int = Color.WHITE
+    private var shadowColor: Int = Color.BLACK
+    private var textColor: Int = Color.BLACK
+    private var textFontFamily: String = "sans-serif-medium"
+    private var menuIcon: Drawable = resources.getDrawable(android.R.drawable.ic_menu_help, null)
+    private var menuCloseIcon: Drawable =
+        resources.getDrawable(android.R.drawable.ic_menu_revert, null)
     private var menuItems: MutableList<ExpandedMenuItem> = mutableListOf()
-    var isOnClickClosable : Boolean = false
+    private var isOnClickClosable: Boolean = false
 
-    private var onItemClickListener : ExpandedMenuClickListener? = null
+    private var onItemClickListener: ExpandedMenuClickListener? = null
 
     constructor(context: Context) : this(context, null)
 
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        val attributes = context.theme.obtainStyledAttributes(attrs, R.styleable.ExpandedMenuView, defStyleAttr, 0)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        val attributes = context.theme.obtainStyledAttributes(
+            attrs,
+            R.styleable.ExpandedMenuView,
+            defStyleAttr,
+            0
+        )
         initByAttributes(attributes)
         attributes.recycle()
     }
 
     private fun initByAttributes(attributes: TypedArray) {
-        menuOutsideMargin = attributes.getDimensionPixelOffset(R.styleable.ExpandedMenuView_em_outside_margin, menuOutsideMargin.toInt()).toFloat()
-        menuBackground = attributes.getColor(R.styleable.ExpandedMenuView_em_background_color, menuBackground)
+        menuOutsideMargin = attributes.getDimensionPixelOffset(
+            R.styleable.ExpandedMenuView_em_outside_margin,
+            menuOutsideMargin.toInt()
+        ).toFloat()
+        menuCornerRadius = attributes.getDimensionPixelOffset(
+            R.styleable.ExpandedMenuView_em_corner_radius,
+            menuCornerRadius.toInt()
+        ).toFloat()
+        menuBackground =
+            attributes.getColor(R.styleable.ExpandedMenuView_em_background_color, menuBackground)
         shadowColor = attributes.getColor(R.styleable.ExpandedMenuView_em_shadow_color, shadowColor)
         textColor = attributes.getColor(R.styleable.ExpandedMenuView_em_text_color, textColor)
-        textFontFamily = attributes.getString(R.styleable.ExpandedMenuView_em_font_family) ?: textFontFamily
+        textFontFamily =
+            attributes.getString(R.styleable.ExpandedMenuView_em_font_family) ?: textFontFamily
         val iconMenu = attributes.getDrawable(R.styleable.ExpandedMenuView_em_menu_icon)
         if (iconMenu != null) menuIcon = iconMenu
+        menuIcon.mutate()
         val iconCloseMenu = attributes.getDrawable(R.styleable.ExpandedMenuView_em_close_menu_icon)
         if (iconCloseMenu != null) menuCloseIcon = iconCloseMenu
-        isOnClickClosable = attributes.getBoolean(R.styleable.ExpandedMenuView_em_is_on_click_closable, isOnClickClosable)
+        menuCloseIcon.mutate()
+        isOnClickClosable = attributes.getBoolean(
+            R.styleable.ExpandedMenuView_em_is_on_click_closable,
+            isOnClickClosable
+        )
     }
 
     override fun invalidate() {
@@ -125,7 +145,8 @@ class ExpandedMenuView : View {
         initPainters()
 
         if (currentState == OPEN_STATE) {
-            menuWidthOffset = (measuredWidth - MENU_CLOSE_WIDTH_AND_HEIGHT - menuOutsideMargin * 2).toInt()
+            menuWidthOffset =
+                (measuredWidth - MENU_CLOSE_WIDTH_AND_HEIGHT - menuOutsideMargin * 2).toInt()
         }
         menuRect.set(
             measuredWidth - menuOutsideMargin - MENU_CLOSE_WIDTH_AND_HEIGHT - menuWidthOffset,
@@ -133,7 +154,7 @@ class ExpandedMenuView : View {
             measuredWidth - menuOutsideMargin,
             measuredHeight - menuOutsideMargin
         )
-        canvas.drawRoundRect(menuRect, 18.dpToPx(), 18.dpToPx(), menuPaint)
+        canvas.drawRoundRect(menuRect, menuCornerRadius, menuCornerRadius, menuPaint)
 
         menuIcon.setBounds(
             (measuredWidth - menuOutsideMargin - 40.dpToPx()).toInt(),
@@ -153,11 +174,14 @@ class ExpandedMenuView : View {
         menuCloseIcon.alpha = menuCloseIconAlpha
         menuCloseIcon.draw(canvas)
 
-        val itemWidth: Float = (measuredWidth - menuOutsideMargin * 2 - 8.dpToPx() * (menuItems.size + 2)) / (menuItems.size + 1)
+        val itemWidth: Float =
+            (measuredWidth - menuOutsideMargin * 2 - 8.dpToPx() * (menuItems.size + 2)) / (menuItems.size + 1)
 
         for (i in 0 until menuItems.size) {
             val item = resources.getDrawable(menuItems[i].icon, null)
+
             menuItems[i].iconTint?.let {
+                item.mutate()
                 item.setTint(it)
             }
             item.setBounds(
@@ -171,14 +195,21 @@ class ExpandedMenuView : View {
 
             canvas.drawText(
                 menuItems[i].name,
-                menuOutsideMargin + 8.dpToPx() * (i + 1) + itemWidth / 2 + itemWidth * i - textPaint.measureText(menuItems[i].name) / 2,
+                menuOutsideMargin + 8.dpToPx() * (i + 1) + itemWidth / 2 + itemWidth * i - textPaint.measureText(
+                    menuItems[i].name
+                ) / 2,
                 measuredHeight - menuOutsideMargin - 6.dpToPx() - 5f.spToPx(),
                 textPaint
             )
         }
     }
 
-    fun setIcons(first: ExpandedMenuItem, second: ExpandedMenuItem, third: ExpandedMenuItem, fourth: ExpandedMenuItem? = null) {
+    fun setIcons(
+        first: ExpandedMenuItem,
+        second: ExpandedMenuItem,
+        third: ExpandedMenuItem,
+        fourth: ExpandedMenuItem? = null
+    ) {
         menuItems.clear()
         menuItems.add(first)
         menuItems.add(second)
@@ -188,17 +219,19 @@ class ExpandedMenuView : View {
         }
     }
 
-    fun setOnItemClickListener(listener : ExpandedMenuClickListener) {
+    fun setOnItemClickListener(listener: ExpandedMenuClickListener) {
         this.onItemClickListener = listener
     }
 
+
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         if (event != null && canTouchThis) {
             val x = event.x
             val y = event.y
 
             val closeAndOpenMenuPlace = RectF()
-            val itemsSetList : MutableList<RectF> = mutableListOf()
+            val itemsSetList: MutableList<RectF> = mutableListOf()
 
             when (currentState) {
                 CLOSE_STATE -> {
@@ -217,7 +250,8 @@ class ExpandedMenuView : View {
                         measuredHeight - menuOutsideMargin
                     )
 
-                    val itemWidth: Float = (measuredWidth - menuOutsideMargin * 2 - 8.dpToPx() * (menuItems.size + 2)) / (menuItems.size + 1)
+                    val itemWidth: Float =
+                        (measuredWidth - menuOutsideMargin * 2 - 8.dpToPx() * (menuItems.size + 2)) / (menuItems.size + 1)
 
                     for (i in 0 until menuItems.size) {
                         itemsSetList.add(RectF().apply {
@@ -242,7 +276,8 @@ class ExpandedMenuView : View {
                     for (i in 0 until itemsSetList.size) {
                         if (itemsSetList[i].contains(x, y)) {
                             onItemClickListener?.onItemClick(i)
-                            if (isOnClickClosable) ExpandedMenuAnimation().getCurrentAnimatorSet().start()
+                            if (isOnClickClosable) ExpandedMenuAnimation().getCurrentAnimatorSet()
+                                .start()
                             return true
                         }
                     }
@@ -276,21 +311,29 @@ class ExpandedMenuView : View {
             menuItemAlpha = state.getInt(INSTANCE_MENU_ITEM_ALPHA)
             menuItemScaleOffset = state.getFloat(INSTANCE_MENU_ITEM_SCALE_OFFSET)
             menuTextAlpha = state.getInt(INSTANCE_MENU_TEXT_ALPHA)
-            super.onRestoreInstanceState(state.getParcelable<Parcelable>(INSTANCE_STATE))
+            super.onRestoreInstanceState(state.getParcelable(INSTANCE_STATE))
             return
         }
         super.onRestoreInstanceState(state)
     }
 
     companion object {
-        private val INSTANCE_STATE = "saved_instance"
-        private val INSTANCE_MENU_STATE = "menu_state"
-        private val INSTANCE_MENU_ICON_ALPHA = "menu_icon_alpha"
-        private val INSTANCE_MENU_CLOSE_ICON_ALPHA = "menu_close_icon_alpha"
-        private val INSTANCE_MENU_CAN_TOUCH_THIS = "menu_can_touch_this"
-        private val INSTANCE_MENU_ITEM_ALPHA = "menu_item_alpha"
-        private val INSTANCE_MENU_ITEM_SCALE_OFFSET = "menu_item_scale_offset"
-        private val INSTANCE_MENU_TEXT_ALPHA = "menu_text_alpha"
+
+        private val MENU_CLOSE_WIDTH_AND_HEIGHT = 56.dpToPx()
+
+        private const val CLOSE_STATE = 0
+        private const val OPEN_STATE = 1
+        private const val DRAGGLING = 2
+
+
+        private const val INSTANCE_STATE = "saved_instance"
+        private const val INSTANCE_MENU_STATE = "menu_state"
+        private const val INSTANCE_MENU_ICON_ALPHA = "menu_icon_alpha"
+        private const val INSTANCE_MENU_CLOSE_ICON_ALPHA = "menu_close_icon_alpha"
+        private const val INSTANCE_MENU_CAN_TOUCH_THIS = "menu_can_touch_this"
+        private const val INSTANCE_MENU_ITEM_ALPHA = "menu_item_alpha"
+        private const val INSTANCE_MENU_ITEM_SCALE_OFFSET = "menu_item_scale_offset"
+        private const val INSTANCE_MENU_TEXT_ALPHA = "menu_text_alpha"
     }
 
     inner class ExpandedMenuAnimation {
