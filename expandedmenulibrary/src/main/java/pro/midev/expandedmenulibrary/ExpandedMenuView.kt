@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
+import android.text.TextUtils.isEmpty
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -42,7 +43,7 @@ class ExpandedMenuView : View {
     private var menuBackground: Int = Color.WHITE
     private var shadowColor: Int = Color.BLACK
     private var textColor: Int = Color.BLACK
-    private var textFontFamily: String = "sans-serif-medium"
+    private var textFontFamily: String = ""
     private var menuIcon: Drawable = ContextCompat.getDrawable(context, android.R.drawable.ic_menu_help)!!
     private var menuCloseIcon: Drawable =
         ContextCompat.getDrawable(context, android.R.drawable.ic_menu_revert)!!
@@ -116,9 +117,9 @@ class ExpandedMenuView : View {
             textSize = 10f.spToPx()
             isAntiAlias = true
             style = Paint.Style.FILL
-            typeface = Typeface.createFromAsset(context.assets, textFontFamily)
             alpha = menuTextAlpha
         }
+        if(!isEmpty(textFontFamily)) textPaint.typeface = Typeface.createFromAsset(context.assets, textFontFamily)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
