@@ -10,6 +10,8 @@ import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Parcelable
+import android.support.v4.content.ContextCompat
+import android.support.v4.graphics.drawable.DrawableCompat
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -41,9 +43,9 @@ class ExpandedMenuView : View {
     private var shadowColor: Int = Color.BLACK
     private var textColor: Int = Color.BLACK
     private var textFontFamily: String = "sans-serif-medium"
-    private var menuIcon: Drawable = resources.getDrawable(android.R.drawable.ic_menu_help, null)
+    private var menuIcon: Drawable = ContextCompat.getDrawable(context, android.R.drawable.ic_menu_help)!!
     private var menuCloseIcon: Drawable =
-        resources.getDrawable(android.R.drawable.ic_menu_revert, null)
+        ContextCompat.getDrawable(context, android.R.drawable.ic_menu_revert)!!
     private var menuItems: MutableList<ExpandedMenuItem> = mutableListOf()
     private var isOnClickClosable: Boolean = false
 
@@ -178,11 +180,11 @@ class ExpandedMenuView : View {
             (measuredWidth - menuOutsideMargin * 2 - 8.dpToPx() * (menuItems.size + 2)) / (menuItems.size + 1)
 
         for (i in 0 until menuItems.size) {
-            val item = resources.getDrawable(menuItems[i].icon, null)
+            val item = ContextCompat.getDrawable(context, menuItems[i].icon)!!
 
             menuItems[i].iconTint?.let {
                 item.mutate()
-                item.setTint(it)
+                DrawableCompat.setTint(item, it)
             }
             item.setBounds(
                 (menuOutsideMargin + 8.dpToPx() * (i + 1) + itemWidth / 2 - menuItemScaleOffset + itemWidth * i).toInt(),
