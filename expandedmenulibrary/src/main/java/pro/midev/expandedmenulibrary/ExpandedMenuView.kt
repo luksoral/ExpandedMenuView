@@ -226,6 +226,13 @@ class ExpandedMenuView : View {
         this.onItemClickListener = listener
     }
 
+    public fun expandMenu() {
+        if(currentState == CLOSE_STATE) ExpandedMenuAnimation().getCurrentAnimatorSet().start()
+    }
+
+    public fun collapseMenu() {
+        if(currentState == OPEN_STATE) ExpandedMenuAnimation().getCurrentAnimatorSet().start()
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
